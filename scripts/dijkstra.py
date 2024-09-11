@@ -119,30 +119,50 @@ def find_target_node(topomap, edge_id, current_node_id):
                 return node_id
     return None
 
-def all_shortest_paths(G, start, target):
-    all_paths = list(nx.all_shortest_paths(G, start, target, weight='weight'))
-    return all_paths
+def find_nodes_by_edge(topomap, edge_id):
+    nodes = []
+    for entry in topomap:
+        node = entry['node']
+        for edge in node['edge']:
+            if edge['edge_id'] == edge_id:
+                nodes.append(node['id'])
+    return nodes
 
-def paths_with_edges(G, paths):
-    paths_with_edges = []
-    for path in paths:
-        edges = []
-        for i in range(len(path) - 1):
-            edge_data = G.get_edge_data(path[i], path[i + 1])
+def find_shortest_path_with_mandatory_edge(G, topomap, start_edge, target):
+    start_nodes = find_nodes_by_edge(topomap, start_edge)
+    valid_paths = []
+
+    for start_node in start_nodes:
+        try:
+            second_leg = nx.shortest_path(G, start_node, target, weight='weight')
+            complete_path = [start_node] + second_leg
+            valid_paths.append(complete_path)
+        except nx.NetworkXNoPath:
+            continue
+    
+    if valid_paths:
+        # 最初のノードからの最短経路を探す
+        shortest_path = min(valid_paths, key=len)
+        
+        # スタートエッジが最初になるように調整
+        start_edge_node = find_nodes_by_edge(topomap, start_edge)[0]
+        if start_edge_node in shortest_path:
+            idx = shortest_path.index(start_edge_node)
+            # スタートエッジが最初になるように調整
+            shortest_path = shortest_path[idx:] + shortest_path[:idx]
+        
+        return shortest_path
+    else:
+        return None
+
+def extract_edges_from_path(G, path):
+    edges = []
+    for i in range(len(path) - 1):
+        edge_data = G.get_edge_data(path[i], path[i + 1])
+        if edge_data:
             edge_id = edge_data['edge_id']
             edges.append(edge_id)
-        paths_with_edges.append((path, edges))
-    return paths_with_edges
-
-def random_shortest_path(G, start, target):
-    all_paths = all_shortest_paths(G, start, target)
-    random_path = random.choice(all_paths)
-    edges = []
-    for i in range(len(random_path) - 1):
-        edge_data = G.get_edge_data(random_path[i], random_path[i + 1])
-        edge_id = edge_data['edge_id']
-        edges.append(edge_id)
-    return random_path, edges
+    return edges
 
 # YAMLファイルを読み込む
 file_path = '/home/osuke/gamma_ws/src/scenario_generator/config/topo_cit3f.yaml'  # トポロジカルマップのYAMLファイルのパスを指定
@@ -151,25 +171,30 @@ topomap = load_topomap(file_path)
 # グラフを作成する
 G = create_graph(topomap)
 
-start = int(input("ノード[1~12]より出発ノードを選択してください:"))
-print(f"出発ノード: {start}")
+# スタートエッジと目標ノードを入力
+start_edge = int(input("エッジ[1~14]より出発エッジを選択してください:"))
+print(f"出発エッジ: {start_edge}")
+
 target = int(input("ノード[1~12]より目標ノードを選択してください:"))
 print(f"目標ノード: {target}")
 
-# 全ての最短経路を取得する
-all_paths = all_shortest_paths(G, start, target)
-
-# 経路とエッジを表示する
-paths_with_edges = paths_with_edges(G, all_paths)
+# スタートエッジを通る最短経路を取得する
+shortest_path = find_shortest_path_with_mandatory_edge(G, topomap, start_edge, target)
 
 
-print("すべての最短経路:")
-for path, edges in paths_with_edges:
-    print(f"node: {path}")
-    print(f"Edges: {' -> '.join(str(edge_id) for edge_id in edges)}")
+if shortest_path:
+    # ノードの最初の１つを削除するが、エッジはそのままにする
+    nodes = shortest_path
+    edges = extract_edges_from_path(G, nodes)
+    edges_with_start = [start_edge] + edges
 
-# ランダムな最短経路を取得して表示する
-random_path, random_edges = random_shortest_path(G, start, target)
-print("\n最短経路の中からランダムに選んだ１例:")
-print(f"node: {random_path}") 
-print(f"Edges: {' -> '.join(str(edge_id) for edge_id in random_edges)}")
+
+    # 最初のノードを出力から削除する
+    print("最短経路のノード:")
+    print(f"Nodes: {' -> '.join(str(node) for node in nodes[1:])}")
+    
+    print("最短経路のエッジ:")
+    print(f"Edges: {' -> '.join(str(edge_id) for edge_id in edges_with_start)}")
+
+else:
+    print("スタートエッジから目標ノードへの経路が見つかりませんでした。")
