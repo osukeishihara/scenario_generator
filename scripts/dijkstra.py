@@ -153,7 +153,16 @@ def interleave_lists(nodes, edges):
         interleaved.append(nodes[-1])
     return interleaved
 
+
+import random
+
 def describe_route(topomap, path, edges):
+    instructions = []
+    node_count = 0
+    in_straight = False
+    prev_deg = None
+    first_straight = True  # 最初の直進かどうかを確認するフラグ
+
     # ノードのタイプを辞書にする
     node_type = {node['node']['id']: node['node']['type'] for node in topomap}
 
@@ -162,16 +171,15 @@ def describe_route(topomap, path, edges):
                     for node in topomap for edge in node['node']['edge']
                     for node_id in [node['node']['id']]}
 
-    instructions = []
-    node_count = 0
-    in_straight = False
-    prev_deg = None
-    first_straight = True  # 最初の直進を区別するためのフラグ
-
     def add_straight_instruction():
         """通常の直進指示を追加"""
         if node_count > 0:
-            instructions.append(f"{node_count}つ目の角が見えるまで直進")
+            # ランダムに選択肢を選ぶ
+            choice = random.choice([
+                f"{node_count}つ目の角が見えるまで直進",
+                f"{node_count}つ目の三叉路まで直進"
+            ])
+            instructions.append(choice)
             return True
         return False
 
@@ -193,9 +201,26 @@ def describe_route(topomap, path, edges):
     def process_straight():
         """直進処理を統一して行う"""
         if in_straight:
+            print(f"Debug: In straight, node_count = {node_count}, checking 180-degree edge")
+
             if first_straight and node_count == 1 and is_start_dead_end():
-                instructions.append("1つ目の角が見えるまで直進")
+                # スタートが dead_end ならランダムに選択
+                choice = random.choice([
+                    "1つ目の角が見えるまで直進",
+                    "通路が見えるまで直進"
+                ])
+                instructions.append(choice)
                 return True  # 最初の直進処理はこれで終了
+
+            elif node_count == 1 and has_180_degree_edge(path[i-1], current_node):
+                # 通るノードが1つで、かつ180°エッジがある場合
+                choice = random.choice([
+                    "1つ目の角が見えるまで直進",
+                    "通路が見えるまで直進"
+                ])
+                instructions.append(choice)
+                return True
+
             elif not has_180_degree_edge(path[i-1], current_node):
                 instructions.append("突き当りまで直進")
             else:
@@ -205,6 +230,10 @@ def describe_route(topomap, path, edges):
     def is_start_dead_end():
         """スタートノードが dead_end かどうかを確認"""
         return node_type.get(path[0]) == 'dead_end'
+
+    # path または edges が空の場合の処理
+    if not path or not edges:
+        return "経路データが不足しています"
 
     for i, (current_node, next_node) in enumerate(zip(path[:-1], path[1:])):
         edge_id = G.get_edge_data(current_node, next_node)['edge_id']
@@ -256,7 +285,14 @@ def describe_route(topomap, path, edges):
 
     instructions.append("停止")
 
-    return ', '.join(instructions)
+    # instructions が空でない場合はその内容を結合して返す
+    if instructions:
+        return ', '.join(instructions)
+
+    # デフォルトのメッセージ
+    return "経路が見つかりませんでした"
+
+
 
 
 
@@ -344,4 +380,4 @@ else:
 
         # ランダム経路の説明を追加
         description = describe_route(topomap, random_path, random_edges)
-        print(f"\nrandom route description:\n{description}")
+        print(f"\nscenario:\n{description}")
