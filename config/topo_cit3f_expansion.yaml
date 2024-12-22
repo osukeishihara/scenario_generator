@@ -1,0 +1,186 @@
+topomap:
+  - node:
+      id: 1
+      edge: 
+        - edge_id: 1
+          deg: -90
+      type: dead_end
+  - node:
+      id: 2
+      edge:
+        - edge_id: 2
+          deg: -90
+        - edge_id: 1
+          deg: 90
+        - edge_id: 15
+          deg: 0
+      type: 3way
+  - node:
+      id: 3
+      edge:
+        - edge_id: 2
+          deg: 90
+        - edge_id: 3
+          deg: -90
+        - edge_id: 13
+          deg: 0
+      type: 3way
+  - node:
+      id: 4
+      edge: 
+        - edge_id: 3
+          deg: 90 
+        - edge_id: 4
+          deg: -90
+        - edge_id: 11
+          deg: 0
+      type: 3way
+  - node:
+      id: 5
+      edge: 
+        - edge_id: 4
+          deg: 90 
+        - edge_id: 6
+          deg: 0
+        - edge_id: 5
+          deg: -90
+      type: corner
+  - node:
+      id: 6
+      edge: 
+        - edge_id: 5
+          deg: 90 
+      type: dead_end
+  - node:
+      id: 7
+      edge: 
+        - edge_id: 7
+          deg: 90 
+      type: dead_end
+  - node:
+      id: 8
+      edge: 
+        - edge_id: 6
+          deg: 180
+        - edge_id: 7
+          deg: -90
+        - edge_id: 9
+          deg: 90
+      type: corner
+  - node:
+      id: 10
+      edge: 
+        - edge_id: 9
+          deg: -90 
+        - edge_id: 10
+          deg: 90
+        - edge_id: 17
+          deg: 0
+      type: 3way
+  - node:
+      id: 11
+      edge: 
+        - edge_id: 10
+          deg: -90 
+        - edge_id: 11
+          deg: 180
+        - edge_id: 12
+          deg: 90
+      type: 3way
+  - node:
+      id: 12
+      edge: 
+        - edge_id: 12
+          deg: -90 
+        - edge_id: 13
+          deg: 180
+        - edge_id: 14
+          deg: 90
+      type: 3way
+  - node:
+      id: 13
+      edge: 
+        - edge_id: 14
+          deg: -90 
+        - edge_id: 15
+          deg: 180
+        - edge_id: 16
+          deg: 90
+      type: 3way
+  - node:
+      id: 14
+      edge: 
+        - edge_id: 16
+          deg: -90 
+      type: dead_end
+  - node:
+      id: 15
+      edge: 
+        - edge_id: 17
+          deg: 180 
+        - edge_id: 18
+          deg: 0 
+        - edge_id: 19
+          deg: 90 
+      type: 3way
+  - node:
+      id: 16
+      edge: 
+        - edge_id: 18
+          deg: 180 
+      type: dead_end
+  - node:
+      id: 17
+      edge: 
+        - edge_id: 19
+          deg: -90 
+        - edge_id: 20
+          deg: 0 
+      type: corner
+  - node:
+      id: 18
+      edge: 
+        - edge_id: 20
+          deg: -90 
+      type: dead_end
+
+  # - edge:
+  #     id: 1
+  # - edge: 
+  #     id: 2
+  # - edge: 
+  #     id: 3
+  # - edge: 
+  #     id: 4
+  # - edge: 
+  #     id: 5
+  # - edge: 
+  #     id: 6
+  # - edge: 
+  #     id: 7
+  # - edge: 
+  #     id: 8
+  # - edge: 
+  #     id: 9
+  # - edge: 
+  #     id: 10
+  # - edge: 
+  #     id: 11
+  # - edge: 
+  #     id: 12
+  # - edge: 
+  #     id: 13
+  # - edge: 
+  #     id: 14
+  # - edge: 
+  #     id: 15
+  # - edge: 
+  #     id: 16
+  # - edge: 
+  #     id: 17
+  # - edge: 
+  #     id: 18
+  # - edge: 
+  #     id: 19
+  # - edge: 
+  #     id: 20

@@ -7,7 +7,9 @@ import threading
 
 # YAMLデータを読み込む
 # yaml_file_path = '/home/osuke/gamma_ws/src/scenario_generator/config/topo_cit3f.yaml'
-yaml_file_path = '/home/osuke/gamma_ws/src/scenario_generator/config/topo_cit3f.yaml'
+# yaml_file_path = '/home/osuke/gamma_ws/src/scenario_generator/config/topo_cit3f.yaml'
+yaml_file_path = '/home/osuke/gamma_ws/src/scenario_generator/config/topo_cit3f_expansion.yaml'
+
 with open(yaml_file_path) as yaml_data:
     data = yaml.load(yaml_data, Loader=yaml.FullLoader)
 
@@ -153,9 +155,6 @@ def interleave_lists(nodes, edges):
         interleaved.append(nodes[-1])
     return interleaved
 
-
-import random
-
 def describe_route(topomap, path, edges):
     instructions = []
     node_count = 0
@@ -201,12 +200,13 @@ def describe_route(topomap, path, edges):
     def process_straight():
         """直進処理を統一して行う"""
         if in_straight:
-            print(f"Debug: In straight, node_count = {node_count}, checking 180-degree edge")
+            # print(f"Debug: In straight, node_count = {node_count}, checking 180-degree edge")
 
             if first_straight and node_count == 1 and is_start_dead_end():
                 # スタートが dead_end ならランダムに選択
                 choice = random.choice([
                     "1つ目の角が見えるまで直進",
+                    "１つ目の三叉路まで直進",
                     "通路が見えるまで直進"
                 ])
                 instructions.append(choice)
@@ -216,6 +216,7 @@ def describe_route(topomap, path, edges):
                 # 通るノードが1つで、かつ180°エッジがある場合
                 choice = random.choice([
                     "1つ目の角が見えるまで直進",
+                    "１つ目の三叉路まで直進",
                     "通路が見えるまで直進"
                 ])
                 instructions.append(choice)
@@ -276,7 +277,7 @@ def describe_route(topomap, path, edges):
     # 最後の直進処理
     final_node = path[-1]
     if in_straight:
-        if node_count == 1 and (node_type.get(path[-2]) == 'dead_end' or node_type.get(final_node) == 'dead_end'):
+        if (node_type.get(path[-2]) == 'dead_end' or node_type.get(final_node) == 'dead_end'):
             instructions.append("突き当りまで直進")
         elif not has_180_degree_edge(path[-2], final_node):
             instructions.append("突き当りまで直進")
@@ -311,7 +312,8 @@ def input_int(prompt):
             print("整数を入力してください。")
 
 # YAMLファイルを読み込む
-file_path = '/home/osuke/gamma_ws/src/scenario_generator/config/topo_cit3f.yaml'  # トポロジカルマップのYAMLファイルのパスを指定
+# file_path = '/home/osuke/gamma_ws/src/scenario_generator/config/topo_cit3f.yaml'  # トポロジカルマップのYAMLファイルのパスを指定
+file_path = '/home/osuke/gamma_ws/src/scenario_generator/config/topo_cit3f_expansion.yaml'
 topomap = load_topomap(file_path)
 
 # グラフを作成する
