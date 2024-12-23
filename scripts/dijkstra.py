@@ -183,19 +183,28 @@ def describe_route(topomap, path, edges):
         return False
 
     def has_180_degree_edge(current_node, next_node):
-        """次のノードに接続する180°方向のエッジがあるか確認"""
+    # 現在のノードと次のノードのエッジ情報を取得
         current_degree = edge_degrees.get((G.get_edge_data(current_node, next_node)['edge_id'], next_node), None)
         if current_degree is None:
             return False
 
-        # 180°方向のエッジが存在するか確認
+        # 他のエッジの角度を調べる
         for edge in G.edges(current_node):
             target_node = edge[1]
             edge_data = G.get_edge_data(edge[0], target_node)
             edge_degree = edge_data['deg']
             if (edge_degree - current_degree) % 360 == 180:
                 return True
+
+        # 特に3wayの場合は複数のエッジが存在するため直進できる場合も考慮
+        if node_type.get(current_node) in ['3way']:
+            return True  # 3wayなら直進可能と判断
+
         return False
+    def is_start_dead_end():
+        """スタートノードが dead_end かどうかを確認"""
+        return node_type.get(path[0]) == 'dead_end'
+        
 
     def process_straight():
         """直進処理を統一して行う"""
@@ -228,9 +237,7 @@ def describe_route(topomap, path, edges):
                 add_straight_instruction()
         return False
 
-    def is_start_dead_end():
-        """スタートノードが dead_end かどうかを確認"""
-        return node_type.get(path[0]) == 'dead_end'
+    
 
     # path または edges が空の場合の処理
     if not path or not edges:
@@ -383,3 +390,10 @@ else:
         # ランダム経路の説明を追加
         description = describe_route(topomap, random_path, random_edges)
         print(f"\nscenario:\n{description}")
+
+# descriptionをファイルに保存する関数
+def save_description_to_file(description, file_path):
+    with open('/home/osuke/gamma_ws/src/scenario_navigation/config/Scenarios/scenario_generator.txt', 'w', encoding='utf-8') as file:
+        file.write(description)
+# ファイルに保存
+save_description_to_file(description, '/home/osuke/gamma_ws/src/scenario_navigation/config/Scenarios/scenario_generator.txt')
