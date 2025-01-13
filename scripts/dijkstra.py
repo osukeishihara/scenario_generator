@@ -216,7 +216,6 @@ def describe_route(topomap, path, edges):
                 choice = random.choice([
                     "1つ目の角が見えるまで直進",
                     "１つ目の三叉路まで直進",
-                    "通路が見えるまで直進"
                 ])
                 instructions.append(choice)
                 return True  # 最初の直進処理はこれで終了
@@ -226,7 +225,6 @@ def describe_route(topomap, path, edges):
                 choice = random.choice([
                     "1つ目の角が見えるまで直進",
                     "１つ目の三叉路まで直進",
-                    "通路が見えるまで直進"
                 ])
                 instructions.append(choice)
                 return True
@@ -291,11 +289,11 @@ def describe_route(topomap, path, edges):
         else:
             add_straight_instruction()
 
-    instructions.append("停止")
+    instructions.append("停止．")
 
     # instructions が空でない場合はその内容を結合して返す
     if instructions:
-        return ', '.join(instructions)
+        return '．'.join(instructions)
 
     # デフォルトのメッセージ
     return "経路が見つかりませんでした"
